@@ -41,7 +41,7 @@ browserPromise
         return url;
     }).then(function(url) {
         let quesobj = codes[0];
-        let questionWillBeSolvedPromise = questionSolver(quesUrl, quesobj.qname, quesobj.soln)
+        let questionWillBeSolvedPromise = questionSolver(url, quesobj.qname, quesobj.soln)
 
 
     })
@@ -62,6 +62,68 @@ function waitandclick(selector) {
 
 function questionSolver(url, ques, code) {
     return new Promise(function(resolve, request) {
+        let pageReachedPromise = gtab.goto(url);
+        pageReachedPromise
+            .then(function() {
+                let queswillbeclickedpromise = gtab.evaluate(browserconsolefn, ques);
+                return queswillbeclickedpromise;
 
+                function browserconsolefn(ques) {
+                    let h4Array = document.querySelectorAll("h4");
+                    let quesname = []
+                    for (let i = 0; i < h4Array.length; i++) {
+                        quesname.push(h4Array[i].innerText.split("\n")[0]);
+                    }
+                    let idx = quesname.indexOf(ques);
+                    console.log("hello")
+                    console.log(idx);
+                    h4Array[idx].click();
+                }
+            }).then(function() {
+                //print ans to the editor
+                //print ans to custom  input
+                //select all from custom input
+                //cut  all from custom input
+                //click on editor window
+                //select all in editor window
+                //paste in editor window
+                let customInputCheckboxPromise = waitandclick(".custom-input-checkbox");
+                return customInputCheckboxPromise;
+            })
+            .then(function() {
+                let printAnsToCustomEditorInput = gtab.type(".custominput", code);
+                return printAnsToCustomEditorInput;
+            })
+            .then(function() {
+                let ctrlPressAndHold = gtab.keyboard.down("Control");
+                return ctrlPressAndHold;
+            }).then(function() {
+                let apressed = gtab.keyboard.press("a");
+                return apressed;
+            }).then(function() {
+                let xpressed = gtab.keyboard.press("x");
+                return xpressed;
+            })
+            .then(function() {
+                let cursormovedtoide = gtab.click(".monaco-editor.no-user-select.vs");
+                return cursormovedtoide;
+            })
+            .then(function() {
+                let apressed = gtab.keyboard.press("a");
+                return apressed;
+            }).then(function() {
+                let vpressed = gtab.keyboard.press("v");
+                return vpressed;
+            })
+            .then(function() {
+                let ctrlrelease = gtab.keyboard.up("Control");
+                return ctrlrelease;
+            }).
+        then(function() {
+            let submitWillBeClickedPromise = gtab.click(".pull-right.btn.btn-primary.hr-monaco-submit");
+            return submitWillBeClickedPromise;
+        }).then(function() {
+            resolve();
+        })
     })
 }
