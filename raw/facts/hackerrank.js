@@ -1,4 +1,5 @@
 let puppeteer = require("puppeteer");
+let { codes } = require("./code")
 let browserPromise = puppeteer.launch({
     headless: false,
     defaultViewport: null,
@@ -23,29 +24,59 @@ browserPromise.then(function(browser) {
         let enterWillBePressed = gtab.keyboard.press("Enter");
         let getnextelementpromise = gtab.waitForSelector(".ui-btn.ui-btn-normal.ui-btn-large.ui-btn-primary.ui-btn-link.ui-btn-styled", { visible: true });
         let p1 = Promise.all([enterWillBePressed, getnextelementpromise]);
-        return p1;
+        return enterWillBePressed;
 
     })
     .then(function() {
-        let getnextelementpromise = gtab.waitForSelector(".ui-btn.ui-btn-normal.playlist-card-btn.ui-btn-primary.ui-btn-link.ui-btn-styled", { visible: true })
-        let ipkitWillBeClicked = gtab.click(".ui-btn.ui-btn-normal.ui-btn-large.ui-btn-primary.ui-btn-link.ui-btn-styled");
-        let p2 = Promise.all([ipkitWillBeClicked, getnextelementpromise, gtab.waitForNavigation({ waitUntil: "domcontentloaded" })]);
-        return p2;
+        let ipkitWillBeClicked = waitandclick(".ui-btn.ui-btn-normal.ui-btn-large.ui-btn-primary.ui-btn-link.ui-btn-styled");
+        return ipkitWillBeClicked;
     })
     .then(function() {
-        let seechalangeWillBeClicked = gtab.click(".ui-btn.ui-btn-normal.playlist-card-btn.ui-btn-primary.ui-btn-link.ui-btn-styled");
-        let getnextelementpromise = gtab.waitForSelector(".ui-btn.ui-btn-normal.primary-cta.ui-btn-primary.ui-btn-styled", { visible: true })
-        let p3 = Promise.all([seechalangeWillBeClicked, gtab.waitForNavigation({ waitUntil: "domcontentloaded" }), getnextelementpromise]);
-        return p3;
+        let seechalangeWillBeClicked = waitandclick(".ui-btn.ui-btn-normal.playlist-card-btn.ui-btn-primary.ui-btn-link.ui-btn-styled");
+        return seechalangeWillBeClicked;
 
     })
-    // .catch(function(err) {
-    //     console.log()
-    // })
     .then(function() {
-        let SolveChallengeWillBeClickedPromise = gtab.click(".ui-btn.ui-btn-normal.primary-cta.ui-btn-primary.ui-btn-styled");
-        return SolveChallengeWillBeClickedPromise;
+        return gtab.url();
+    }).then(function(url) {
+        console.log(url);
+        let questionObj = codes[0];
+        QuestionSolver(url, questionObj.soln, questionObj.qname);
     })
-    .then(function() {
-        console.log("ques reached");
+
+function waitandclick(selector) {
+    return new Promise(function(resolve, reject) {
+        let selectorWaitPromise = gtab.waitForSelector(selector, { visible: true });
+        selectorWaitPromise.then(function() {
+            let selectorClickPromise = gtab.click(selector);
+            return selectorClickPromise
+        }).then(function() {
+            resolve();
+        })
+
     })
+}
+
+function QuestionSolver(modulepageurl, code, questionName) {
+    return new Promise((resolve, reject) => {
+        //page visit
+        let reachedPageUrlPromise = gtab.goto(modulepageurl);
+        reachedPageUrlPromise
+            .then(() => {
+
+                function browserconsolefn(questionName) {
+                    let allH4Elem = document.querySelectorAll("h4");
+                    let textArr = [];
+                    for (let i = 0; i < allH4Elem.length; i++) {
+                        let myQuestion = allH4Elem[i].innerText.split("\n")[0];
+                        textArr.push(myQuestion);
+                    }
+                    let idx = textArr.indexOf(questionName);
+                    console.log(idx);
+                    allH4Elem[idx].click();
+                }
+                let pageclickPromise = gtab.evaluate(browserconsolefn, questionName);
+                return pageclickPromise;
+            })
+    })
+}
