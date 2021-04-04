@@ -7,6 +7,7 @@ let browserPromise = puppeteer.launch({
     args: ['--start-maximized']
 })
 let gtab;
+let purl;
 browserPromise
     .then(function(browser) {
         let newtabPromise = browser.newPage();
@@ -18,9 +19,9 @@ browserPromise
         return gotoHackerRankLogInPromise;
     })
     .then(() => {
-        let EmailWillTypedPromise = gtab.type('input[placeholder="Your username or email"]', email);
+        let EmailWillTypedPromise = gtab.type('input[placeholder="Your username or email"]', email, { delay: 10 });
         EmailWillTypedPromise.then(() => {
-            let passwordWillBeTypedPromise = gtab.type('input[placeholder="Your password"]', password);
+            let passwordWillBeTypedPromise = gtab.type('input[placeholder="Your password"]', password, { delay: 10 });
             passwordWillBeTypedPromise.then(() => {
                 let EnterWillBePressedPromise = gtab.keyboard.press("Enter")
                 return EnterWillBePressedPromise;
@@ -38,12 +39,34 @@ browserPromise
     })
     .then(function() {
         let url = gtab.url();
+        purl = url;
         return url;
     }).then(function(url) {
         let quesobj = codes[0];
+        console.log(url + "\n" + purl);
+        let questionWillBeSolvedPromise = questionSolver(purl, quesobj.qname, quesobj.soln)
+        return questionWillBeSolvedPromise;
+    }).then(function(url) {
+        let quesobj = codes[1];
+
+        let questionWillBeSolvedPromise = questionSolver(purl, quesobj.qname, quesobj.soln)
+        console.log(url);
+        return questionWillBeSolvedPromise;
+    }).then(function(url) {
+        let quesobj = codes[2];
+
         let questionWillBeSolvedPromise = questionSolver(url, quesobj.qname, quesobj.soln)
+        return questionWillBeSolvedPromise;
+    }).then(function(url) {
+        let quesobj = codes[3];
 
-
+        let questionWillBeSolvedPromise = questionSolver(url, quesobj.qname, quesobj.soln)
+        return questionWillBeSolvedPromise;
+    })
+    .then(function(url) {
+        return gtab.goto(url);
+    }).then(function() {
+        resolve();
     })
 
 function waitandclick(selector) {
@@ -123,7 +146,7 @@ function questionSolver(url, ques, code) {
             let submitWillBeClickedPromise = gtab.click(".pull-right.btn.btn-primary.hr-monaco-submit");
             return submitWillBeClickedPromise;
         }).then(function() {
-            resolve();
+            resolve(url);
         })
     })
 }
