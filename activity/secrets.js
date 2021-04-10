@@ -4,5 +4,5 @@
 // }
 module.exports = {
     email: "molaxi3342@whyflkj.com",
-    password: "Shaktimaan1234@"
+    password: "Shaktimaan12345@"
 }

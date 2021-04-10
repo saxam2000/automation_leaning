@@ -14,11 +14,11 @@ browserPromise.then(function(browser) {
         let gotohackerrankloginpromise = newTab.goto("https://www.hackerrank.com/auth/login");
         return gotohackerrankloginpromise
     }).then(function() {
-        let emailIdTypedPromise = gtab.type('input[placeholder="Your username or email"]', "tajec29313@dwgtcm.com", { delay: 10 })
+        let emailIdTypedPromise = gtab.type('input[placeholder="Your username or email"]', "molaxi3342@whyflkj.com", { delay: 10 })
         return emailIdTypedPromise
 
     }).then(function() {
-        let passwordinputPromise = gtab.type('input[placeholder="Your password"]', "Shaktimaan1234@", { delay: 10 })
+        let passwordinputPromise = gtab.type('input[placeholder="Your password"]', "Shaktimaan12345@", { delay: 10 })
         return passwordinputPromise;
     }).then(function() {
         let enterWillBePressed = gtab.keyboard.press("Enter");
